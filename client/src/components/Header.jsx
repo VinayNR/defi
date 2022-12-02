@@ -17,37 +17,12 @@ import { UserContext } from '../contexts/UserContext/UserContext';
 
 function Header() {
 
-    const {user, login, logout} = useContext(UserContext);
+    const {user, alert, login, logout, showAlert, setShowAlert} = useContext(UserContext);
 
-    const [showAlert, setShowAlert] = useState(false);
     const [showAccount, setShowAccount] = useState(false);
-
-    const [alertHeading, setAlertHeading] = useState('');
-    const [alertBody, setAlertBody] = useState('');
-
-    // const login = async () => {
-    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //     if (accounts !== null && accounts.length > 0) {
-    //         setLoggedIn(true);
-    //         setAccountAddress(accounts[0]);
-    //         setShowAlert(true);
-    //         setAlertHeading('You have logged in successfully!');
-    //         setAlertBody('You have logged into your Metamask primary account. Your session will remain connected on this site, until you manually remove the connected site on top right of the website.');
-    //     }
-    // }
-
-    // const logout = async () => {
-    //     // clear account address and logged in user
-    //     setLoggedIn(false);
-    //     setAccountAddress("");
-    //     setShowAlert(true);
-    //     setAlertHeading('You have logged out successfully!');
-    //     setAlertBody('');
-    // };
 
     return (
         <>
-
             <Navbar bg="dark" expand="lg" variant="dark">
                 <Container>
                     <Navbar.Brand href="#/home">Home
@@ -78,8 +53,8 @@ function Header() {
             </Navbar>
 
             <Alert show={showAlert} variant="success" dismissible onClose={() => setShowAlert(false)}>
-                <Alert.Heading>Heading</Alert.Heading>
-                <p>Body</p>
+                <Alert.Heading>{alert.heading}</Alert.Heading>
+                <p>{alert.body}</p>
             </Alert>
 
             <Modal show={showAccount} onHide={() => setShowAccount(false)}>

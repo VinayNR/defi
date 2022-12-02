@@ -1,65 +1,82 @@
 import { useState } from "react";
 
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import Container from 'react-bootstrap/Container';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+
+import p2ppng from "../images/p2p.png"
+import poolpng from "../images/pool.png"
+import swappng from "../images/swap.png"
 
 
 function Home() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [accountAddress, setAccountAddress] = useState("");
-
-  const [showAlert, setShowAlert] = useState(false);
-
-  const [alertHeading, setAlertHeading] = useState('');
-  const [alertBody, setAlertBody] = useState('');
-
-  const connectToWallet = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    if (accounts !== null && accounts.length > 0) {
-      setLoggedIn(true);
-      setAccountAddress(accounts[0]);
-      setShowAlert(true);
-      setAlertHeading('You have logged in successfully!');
-      setAlertBody('You have logged into your Metamask primary account. Your session will remain connected on this site, until you manually remove the connected site on top right of the website.');
-    }
-  };
-
-  const disConnectWallet = async () => {
-    // clear account address and logged in user
-    setLoggedIn(false);
-    setAccountAddress("");
-    setShowAlert(true);
-    setAlertHeading('You have logged out successfully!');
-    setAlertBody('');
-  };
-
+  
   return (
     <>
-      <Alert show={showAlert} variant="success" dismissible onClose={() => {setShowAlert(false)}}>
-        <Alert.Heading>{alertHeading}</Alert.Heading>
-        <p>
-          {alertBody}
-        </p>
-      </Alert>
-
       <div className="p-3">
-        <h1>👋 Welcome to the Truffle + React Box!</h1>
+        <h1>Decentralized Finance using Blockchain</h1>
         <p>
-          This is everything you need to start using Truffle to write,
-          compile, test, and deploy smart contracts, and interact with
-          them from a React app.
+          This application lets you send cryptocurrency tokens
+          to friends, allows you to swap tokens that you own and
+          provides a pool of tokens for interested investors to lend and borrow from.
         </p>
 
-        <h2>Account: {accountAddress}</h2>
+        <Container fluid>
+          <Card className="text-center">
+            <Card.Header>P2P Transact</Card.Header>
+            <Card.Body>
+              <Card.Title>Peer to Peer Account Transact ETH</Card.Title>
+              <Card.Text>
+                Use the Peer to Peer transact feature to send ETH (or other tokens you own) to your friends over the Blockchain or to your own account addresses
+              </Card.Text>
+              <img height={90} width={90} src={p2ppng}/><br/>
+              <Button variant="primary">
+                <Nav.Link href="#/p2p">P2P Transact</Nav.Link>
+              </Button>
+            </Card.Body>
+            <Card.Footer className="text-muted">Powered by Blockchain</Card.Footer>
+          </Card>
 
-        <Button onClick={connectToWallet}>Connect to Wallet</Button>
-        <Button onClick={disConnectWallet}>Disconnect from Wallet</Button>
+          <Row xs={1} md={2} className="m-5">
+            <Col>
+              <Card>
+                <img className="m-2" height={50} width={50} src={poolpng}/>
+                <Card.Body>
+                  <Card.Title>Lending Pool</Card.Title>
+                  <Card.Text>
+                    Invest into a lending pool to earn interest or borrow from it.
+                  </Card.Text>
+                </Card.Body>
+                <Card.Footer>
+                  <Button variant="primary">
+                    <Nav.Link href="#/pool">Explore Lending Pool</Nav.Link>
+                  </Button>
+                </Card.Footer>
+              </Card>
+            </Col>
+            <Col>
+              <Card>
+                <img className="m-2" height={50} width={50} src={swappng}/>
+                <Card.Body>
+                  <Card.Title>Swap Token</Card.Title>
+                  <Card.Text>
+                    Swap tokens that you own into Fiat Currency and vice-versa
+                  </Card.Text>
+                </Card.Body>
+                <Card.Footer>
+                  <Button variant="primary">
+                    <Nav.Link href="#/swap">Explore Swap Token</Nav.Link>
+                  </Button>
+                </Card.Footer>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+        
       </div>
-      
     </>
   );
 }
