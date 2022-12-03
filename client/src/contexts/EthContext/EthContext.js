@@ -1,5 +1,6 @@
 import { createContext } from "react";
+import { initialState } from "./state";
 
-const EthContext = createContext();
+const EthContext = createContext(initialState);
 
-export default EthContext;
+export { EthContext };

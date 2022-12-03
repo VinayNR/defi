@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -32,7 +30,7 @@ function Home() {
               <Card.Text>
                 Use the Peer to Peer transact feature to send ETH (or other tokens you own) to your friends over the Blockchain or to your own account addresses
               </Card.Text>
-              <img height={90} width={90} src={p2ppng}/><br/>
+              <img height={90} width={90} src={p2ppng} alt=""/><br/>
               <Button variant="primary">
                 <Nav.Link href="#/p2p">P2P Transact</Nav.Link>
               </Button>
@@ -43,7 +41,7 @@ function Home() {
           <Row xs={1} md={2} className="m-5">
             <Col>
               <Card>
-                <img className="m-2" height={50} width={50} src={poolpng}/>
+                <img className="m-2" height={50} width={50} src={poolpng} alt=""/>
                 <Card.Body>
                   <Card.Title>Lending Pool</Card.Title>
                   <Card.Text>
@@ -59,7 +57,7 @@ function Home() {
             </Col>
             <Col>
               <Card>
-                <img className="m-2" height={50} width={50} src={swappng}/>
+                <img className="m-2" height={50} width={50} src={swappng} alt=""/>
                 <Card.Body>
                   <Card.Title>Swap Token</Card.Title>
                   <Card.Text>
