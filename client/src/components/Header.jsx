@@ -63,6 +63,8 @@ function Header() {
                 <Modal.Body>
                     Account Address: {user.user.accountAddress}
                     <br/>
+                    Account Balance: {user.user.balance} ETH
+                    <br/>
                     Nonce: {user.user.nonce}
                 </Modal.Body>
                 <Modal.Footer>

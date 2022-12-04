@@ -35,7 +35,7 @@ function Home() {
                 <Nav.Link href="#/p2p">P2P Transact</Nav.Link>
               </Button>
             </Card.Body>
-            <Card.Footer className="text-muted">Powered by Blockchain</Card.Footer>
+            <Card.Footer className="text-muted">Powered by Ganache</Card.Footer>
           </Card>
 
           <Row xs={1} md={2} className="m-5">

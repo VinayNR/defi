@@ -1,42 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback, useReducer } from "react";
 import Web3 from "web3";
 import { EthContext } from "./EthContext";
+import { reducer, actions, initialState } from "./state";
 
 function EthProvider({ children }) {
 
-  let web3, artifact;
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [ networkID, setNetworkID ] = useState(null);
-  const [ contract, setContract ] = useState(null);
+  const init = useCallback(
+    async artifact => {
+      if (artifact) {
+        const web3 = new Web3(Web3.givenProvider);
+        web3.currentProvider.setMaxListeners(300);
+        web3.eth.net.getId().then(networkID => {
+          const { abi } = artifact;
+          let address, contract;
+          try {
+            address = artifact.networks[networkID].address;
+            contract = new web3.eth.Contract(abi, address);
+          } catch (err) {
+            console.error(err);
+          }
+          dispatch({
+            type: actions.init,
+            data: { artifact, web3, networkID, contract }
+          });
+        });
+      }
+    }, []);
+  
+  useEffect(() => {
+    const initEthProvider = async() => {
+      try {
+        const artifact = require("../../contracts/SimpleStorage.json");
+        init(artifact);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-  const init = async artifact => {
-    if (artifact) {
-      // initialize web3
-      web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-      
-      web3.eth.net.getId().then((netId) => {
-        setNetworkID(netId);
-        const { abi } = artifact;
-        try {
-          const address = artifact.networks[netId].address;
-          const contr = new web3.eth.Contract(abi, address);
-          setContract(contr);
-        } catch (err) {
-          console.error(err);
-        }
-      });
-    }
-  }
+    initEthProvider();
+  }, [init]);
 
-  try {
-    artifact = require("../../contracts/SimpleStorage.json");
-    init(artifact);
-  } catch (err) {
-    console.error(err);
-  }
-
-  return (networkID !== null) && (contract !== null) && (
-    <EthContext.Provider value={{ artifact, web3, networkID, contract }}>
+  return (
+    <EthContext.Provider value={{state, dispatch}}>
       {children}
     </EthContext.Provider>
   );
