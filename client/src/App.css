@@ -21,51 +21,6 @@
   height: 100%;
 }
 
-code {
-  display: block;
-  white-space: pre-wrap;
-  padding: 1.2rem 2rem;
-  border-radius: 1rem;
-  background-color: var(--light-gray);
-  font-size: 1.4rem;
-}
-
-code span {
-  transition: all 0.3s;
-}
-
-code span.primary-color {
-  color: var(--primary-color);
-}
-
-code span.secondary-color {
-  color: var(--secondary-color);
-}
-
-code span.dim-color {
-  color: var(--gray);
-}
-
-code span.flash {
-  background-color: var(--flash-color);
-}
-
-details {
-  margin: 1.6rem 0;
-  padding: 0.5rem 2rem 0.5rem 0;
-  border: 1px solid var(--light-gray);
-  border-radius: 1rem;
-}
-
-details :not(summary, span) {
-  margin-left: 2.55rem;
-}
-
-details summary {
-  padding: 1.2rem;
-  cursor: pointer;
-}
-
 p,
 details code {
   margin-top: 1rem;
@@ -142,15 +97,3 @@ hr {
   display: inline-block;
   margin: 2rem 1rem 0 0;
 }
-
-/* .p2pCont {
-  margin: 5px;
-  width: 50px;
-  height: 50px;
-  white-space: pre-wrap;
-  padding: 1.2rem 2rem;
-  border: solid 1px;
-  border-radius: 1rem;
-  background-color: rgba(0, 0, 0, 0.03);
-  font-size: 1.4rem;
-} */
