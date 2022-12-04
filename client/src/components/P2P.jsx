@@ -80,7 +80,7 @@ function P2P() {
             <Container className="mt-2">
                 <Row className="mt-2">
                     <Col/>
-                    <Col xs={8} md={8} lg={8}>
+                    <Col xs={10} md={10} lg={10}>
                         <Card className="text-center">
                             <Card.Header>Send Crypto</Card.Header>
                             <Card.Body>
@@ -114,7 +114,7 @@ function P2P() {
                 
                 <Row className="mt-2">
                     <Col/>
-                    <Col xs={8} md={8} lg={8}>
+                    <Col xs={10} md={10} lg={10}>
                         <Accordion>
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>Transaction History</Accordion.Header>
