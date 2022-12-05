@@ -28,7 +28,7 @@ function Swap() {
     const [input, setInput] = useState(0);
     const [i,setI] = useState(0);
     const [inp, setInp] = useState(0);
-    const [searchTerm, setSearchTerm] = useState(3);
+    const [searchTerm, setSearchTerm] = useState(0);
 
     useEffect(() => {
 
@@ -45,7 +45,7 @@ function Swap() {
             elem2.value=c;
 
         // Send Axios request here
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(delayDebounceFn)
     }, [searchTerm])
@@ -56,15 +56,24 @@ function Swap() {
         const elem = document.getElementById('elem1');
         const a = Number(inp);
         const b = Number(input);
-        const c = b/a;
-        
+        let c = 0;
+
+        if(a==0)
+        {    
+            c = 0;
+        }
+        else
+        {   
+            c = b/a;
+        }
+
         if(isNaN(input) || isNaN(inp))
             elem.value=0;
         else
             elem.value=c;
 
         // Send Axios request here
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(delayDebounceFn)
     }, [input])
@@ -103,7 +112,8 @@ function Swap() {
             "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
             )
           ).json();
-    
+                
+          console.log(data.data.rates.USD)
           // set state when the data received
 
           setInp((data.data.rates.USD));
@@ -145,12 +155,13 @@ function Swap() {
 
                                     <Form.Group className="mb-3">
                                     <Form.Label>Amount (in USD)</Form.Label>
-                                    <Form.Control id="elem2" onChange={retValue} type="text" placeholder="Enter Ether amount" />
+                                    <Form.Control id="elem2" onChange={retValue} type="text" placeholder="Enter Ether amount"/>
                                     </Form.Group>
 
                                     <Button /*onClick={send}*/ variant="primary" type="submit">
                                             Send
                                     </Button>
+                                    
                             </Form>
                             </Card.Text>
                         </Card.Body>
