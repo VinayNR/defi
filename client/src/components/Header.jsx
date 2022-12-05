@@ -1,7 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Alert from 'react-bootstrap/Alert';
@@ -63,6 +62,8 @@ function Header() {
                 </Modal.Header>
                 <Modal.Body>
                     Account Address: {user.user.accountAddress}
+                    <br/>
+                    Account Balance: {user.user.balance} ETH
                     <br/>
                     Nonce: {user.user.nonce}
                 </Modal.Body>
