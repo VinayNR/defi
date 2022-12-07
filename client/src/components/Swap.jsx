@@ -19,7 +19,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import p2ppng from "../images/p2p.png"
 import { useMemo } from 'react';
 
-
+const { state: { web3 } } = useContext(EthContext);
+const { user } = useContext(UserContext);
 
 
 function Swap() {
@@ -124,6 +125,11 @@ function Swap() {
 
     const onClickButton = e => {
 
+        const elem = document.getElementById('elem1');
+        if(elem.value > user.user.balance)
+            console.log("transaction not possible due to insufficient funds");
+        else
+            console.log("transaction successful");
         //const URL = "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
         //const result = e.target.value.replace(/\D/g, '');
 
@@ -132,6 +138,11 @@ function Swap() {
         //setInp(k*5)
     
     }
+
+    const send = async () => {
+        await web3.eth.sendTransaction({from: user.user.accountAddress, to: toAddress, value: web3.utils.toWei(ethValue, "ether")});
+    }
+
 
     const zero = 0;
 
