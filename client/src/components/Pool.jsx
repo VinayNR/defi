@@ -1,10 +1,11 @@
 import React from 'react';
-import { useEffect } from "react";
-import { useState } from "react";
-import useEth from "../../contexts/EthContext/useEth";
+import { useEffect, useState, useContext } from "react";
+import { EthContext } from '../contexts/EthContext/EthContext';
+import { UserContext } from '../contexts/UserContext/UserContext';
 
-function Lend() {
-    const { state: { web3, contract, accounts } } = useEth();
+function Pool() {
+    const { state: { web3, contract, accounts } } = useContext(EthContext);
+    const { user } = useContext(UserContext);
     const [ethValue, setEthValue] = useState("0");
     const [contractBalance, setContractBalance] = useState("");
     const [lendingEntries, setLendingEntries] = useState([]);
@@ -15,10 +16,10 @@ function Lend() {
     };
 
     const updateEntries = async () => {
-        const lenderEntries = await contract.methods.getLenderEntries().call({ from: accounts[0] });
+        const lenderEntries = await contract.methods.getLenderEntries().call({ from: user.user.accountAddress });
         console.log('lenderEntries', lenderEntries);
         setLendingEntries(lenderEntries);
-        const borrowerEntries = await contract.methods.getBorrowerEntries().call({ from: accounts[0] });
+        const borrowerEntries = await contract.methods.getBorrowerEntries().call({ from: user.user.accountAddress });
         console.log('borrowerEntries', borrowerEntries);
         setBorrowingEntries(borrowerEntries);
     }
@@ -32,17 +33,17 @@ function Lend() {
     [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries)]);
     
     const lend = async () => {
-        await contract.methods.lend(Date.now()).send({ from: accounts[0], value: web3.utils.toWei(ethValue, "ether") });
+        await contract.methods.lend(Date.now()).send({ from: user.user.accountAddress, value: web3.utils.toWei(ethValue, "ether") });
         updateEntries();
     };
 
     const borrow = async () => {
-        await contract.methods.borrow(web3.utils.toWei(ethValue, "ether"), Date.now()).send({ from: accounts[0] });
+        await contract.methods.borrow(web3.utils.toWei(ethValue, "ether"), Date.now()).send({ from: user.user.accountAddress });
         updateEntries();
     };
 
     const getBalance = async () => {
-        const balance = await contract.methods.getContractBalance().call({ from: accounts[0] });
+        const balance = await contract.methods.getContractBalance().call({ from: user.user.accountAddress });
         setContractBalance(balance);
     };
 
@@ -77,11 +78,12 @@ function Lend() {
 }
 
 function LendingEntry({ index, entry, updateEntries }) {
-    const { state: { contract, accounts } } = useEth();
+    const { state: { contract } } = useContext(EthContext);
+    const { user } = useContext(UserContext);
     const [lenderBalance, setLenderBalance] = useState(0);
 
     const getLenderBalance = async () => {
-        const balance = await contract.methods.getLenderBalance(index, Date.now()).call({ from: accounts[0] });
+        const balance = await contract.methods.getLenderBalance(index, Date.now()).call({ from: user.user.accountAddress });
         console.log(balance);
         setLenderBalance(balance);
     }
@@ -93,7 +95,7 @@ function LendingEntry({ index, entry, updateEntries }) {
 }, []);
 
     const withdraw = async () => {
-        await contract.methods.withdraw(index, Date.now()).send({ from: accounts[0] });
+        await contract.methods.withdraw(index, Date.now()).send({ from: user.user.accountAddress });
         updateEntries();
     }
 
@@ -119,11 +121,12 @@ function LendingEntryList({ entries, updateEntries }) {
 }
 
 function BorrowingEntry({ index, entry, updateEntries }) {
-    const { state: { contract, accounts } } = useEth();
+    const { state: { contract } } = useContext(EthContext);
+    const { user } = useContext(UserContext);
     const [borrowerBalance, setBorrowerBalance] = useState(0);
 
     const getBorrowerBalance = async () => {
-        const balance = await contract.methods.getBorrowerBalance(index, Date.now()).call({ from: accounts[0] });
+        const balance = await contract.methods.getBorrowerBalance(index, Date.now()).call({ from: user.user.accountAddress });
         setBorrowerBalance(balance);
     }
 
@@ -134,9 +137,9 @@ function BorrowingEntry({ index, entry, updateEntries }) {
     }, []);
 
     const payback = async () => {
-        const borrowerBalance = await contract.methods.getBorrowerBalance(index, Date.now()).call({ from: accounts[0] });
+        const borrowerBalance = await contract.methods.getBorrowerBalance(index, Date.now()).call({ from: user.user.accountAddress });
         console.log((Number(borrowerBalance) + 1000000000000000).toString());
-        await contract.methods.payback(index, Date.now()).send({ from: accounts[0], value: (Number(borrowerBalance) + 11000000000000000).toString() });
+        await contract.methods.payback(index, Date.now()).send({ from: user.user.accountAddress, value: (Number(borrowerBalance) + 11000000000000000).toString() });
         updateEntries();
     }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 
 import { EthContext } from '../contexts/EthContext/EthContext';
 import { UserContext } from '../contexts/UserContext/UserContext';
@@ -30,6 +30,9 @@ function Swap() {
     const [i,setI] = useState(0);
     const [inp, setInp] = useState(0);
     const [searchTerm, setSearchTerm] = useState(0);
+
+    const { state: { web3, contract } } = useContext(EthContext);
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
 
