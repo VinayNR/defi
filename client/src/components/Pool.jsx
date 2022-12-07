@@ -33,12 +33,14 @@ function Pool() {
 
     useEffect(() => {
         async function update() {
-            console.log("useEffect");
             await updateEntries(contract, user.user.accountAddress);
         }
-        update();
+        console.log("useEffect", contract, user);
+
+        if(contract && user && user.user && user.user.accountAddress)
+            update();
     },
-    []);
+    [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries)]);
     
     const lend = async () => {
         console.log("lend", contract, user);
@@ -73,7 +75,7 @@ function Pool() {
                                         <Form.Control onChange={handleEthChange} type="text" placeholder="Enter amount in ETH" />
                                     </Form.Group>
 
-                                    <ButtonToolbar>
+                                    <ButtonToolbar className='justify-content-center'>
                                         <ButtonGroup className="me-2">
                                             <Button onClick={lend} variant="primary" type="submit">
                                                 Lend
@@ -108,7 +110,6 @@ function Pool() {
                                                     <th>#</th>
                                                     <th>Amount</th>
                                                     <th>Balance</th>
-                                                    <th>Withdraw</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -135,7 +136,6 @@ function Pool() {
                                                     <th>#</th>
                                                     <th>Amount</th>
                                                     <th>Balance</th>
-                                                    <th>Payback</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -150,35 +150,6 @@ function Pool() {
         </Row>
             </Container>
         </>
-    );
-
-    return (
-        <div className="btns">
-            <hr/>
-            <LendingEntryList entries={lendingEntries} updateEntries={updateEntries} />
-            <hr />
-            <BorrowingEntryList entries={borrowingEntries} updateEntries={updateEntries} />
-            <hr />
-            <input
-                type="text"
-                placeholder="uint"
-                value={ethValue}
-                onChange={handleEthChange}
-            />
-            <button onClick={lend}>
-                lend()
-            </button>
-
-            <button onClick={borrow}>
-                borrow()
-            </button>
-
-            <p>{contractBalance}</p>
-            <button onClick={getBalance}>
-                checkContractBalance()
-            </button>
-
-        </div>
     );
 }
 
@@ -210,8 +181,18 @@ function LendingEntry({ index, entry, web3 }) {
         <tr key = {index}>
             <td > { index } </td>
             <td> { web3.utils.fromWei(entry, 'ether') } ETH </td>
-            <td> { web3.utils.fromWei(lenderBalance.toString(), 'ether') } </td>
-            <td> <button onClick={withdraw}>Withdraw</button> </td>
+            <td> { web3.utils.fromWei(lenderBalance.toString(), 'ether') }
+                                                <ButtonGroup className="me-2 float-end">
+                                                    <Button onClick={getLenderBalance} variant="primary" type="submit">
+                                                        Update Balance
+                                                    </Button>
+                                                </ButtonGroup>
+
+                                                <ButtonGroup className="me-2 float-end">
+                                                    <Button onClick={withdraw} variant="primary" type="submit">
+                                                        Withdraw
+                                                    </Button>
+                                                </ButtonGroup> </td>
         </tr>
     );
 }
@@ -252,8 +233,18 @@ function BorrowingEntry({ index, entry, web3 }) {
         <tr key = {index}>
             <td > { index } </td>
             <td> { web3.utils.fromWei(entry, 'ether') } ETH </td>
-            <td> { web3.utils.fromWei(borrowerBalance.toString(), 'ether') } </td>
-            <td> <button onClick={payback}>Payback</button> </td>
+            <td> { web3.utils.fromWei(borrowerBalance.toString(), 'ether') } 
+                                                <ButtonGroup className="me-2 float-end">
+                                                    <Button onClick={getBorrowerBalance} variant="primary" type="submit">
+                                                        Update Balance
+                                                    </Button>
+                                                </ButtonGroup>
+
+                                                <ButtonGroup className="me-2 float-end">
+                                                    <Button onClick={payback} variant="primary" type="submit">
+                                                        Payback
+                                                    </Button>
+                                                </ButtonGroup> </td>
         </tr>
     );
 }

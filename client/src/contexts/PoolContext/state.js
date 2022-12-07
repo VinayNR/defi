@@ -1,6 +1,3 @@
-const initialState = {
-    lendingEntries: [],
-    borrowingEntries: []
-};
+const initialState = [];
 
 export { initialState };

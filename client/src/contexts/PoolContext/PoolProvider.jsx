@@ -4,8 +4,8 @@ import { initialState } from "./state";
 
 
 function PoolProvider({ children }) {
-    const [lendingEntries, setLendingEntries] = useState([]);
-    const [borrowingEntries, setBorrowingEntries] = useState([]);
+    const [lendingEntries, setLendingEntries] = useState(initialState);
+    const [borrowingEntries, setBorrowingEntries] = useState(initialState);
 
     const updateEntries = async (contract, address) => {
         console.log(contract);
