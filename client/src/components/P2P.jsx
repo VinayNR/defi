@@ -54,7 +54,8 @@ function P2P() {
                     let block = await web3.eth.getBlock(i, true);
                     if (block != null && block.transactions != null) {
                         block.transactions.forEach( function(e) {
-                            if (accountAddress === "*" || accountAddress === e.from.toLowerCase() || accountAddress === e.to.toLowerCase()) {
+                            console.log(accountAddress, e);
+                            if (accountAddress === "*" || accountAddress === e.from.toLowerCase() || (e.to !== null && accountAddress === e.to.toLowerCase())) {
                                 transactions.push(<tr key = {e.hash}>
                                     <td > { i } </td>
                                     <td> { e.from } </td>   

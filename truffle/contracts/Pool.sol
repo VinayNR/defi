@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract Lending {
+contract Pool {
     struct Entry {
         uint256 amount;
         uint256 timeStamp;
@@ -12,8 +12,8 @@ contract Lending {
     mapping(address => Entry[]) lenders;
     mapping(address => Entry[]) borrowers;
 
-    uint256 constant lend_interest_rate = 60;
-    uint256 constant borrow_interest_rate = 85;
+    uint256 constant lend_interest_rate = 2;
+    uint256 constant borrow_interest_rate = 3;
 
     constructor() {
         owner = msg.sender;
@@ -32,12 +32,12 @@ contract Lending {
     {
         Entry memory entry = lenders[lender][index];
         uint256 amount = entry.amount;
-        uint256 time_sec = entry.timeStamp;
+        uint256 time_periods_hrs = timestamp / 1000 / 3600 - entry.timeStamp / 1000 / 3600;
 
         // Return amount to be withdrawn P + I
         return
             amount +
-            (((amount * (timestamp - time_sec)) / 1000 / 3600 / 24 / 30) *
+            ((amount * time_periods_hrs) *
                 lend_interest_rate) /
             10000;
     }
@@ -79,12 +79,12 @@ contract Lending {
     {
         Entry memory entry = borrowers[borrower][index];
         uint256 amount = entry.amount;
-        uint256 time_sec = entry.timeStamp;
+        uint256 time_periods_hrs = timestamp / 1000 / 3600 - entry.timeStamp / 1000 / 3600;
 
         // Return amount to be paid back P + I
         return
             amount +
-            (((amount * (timestamp - time_sec)) / 1000 / 3600 / 24 / 30) *
+            ((amount * time_periods_hrs) *
                 borrow_interest_rate) /
             10000;
     }
@@ -112,14 +112,13 @@ contract Lending {
     function payback(uint256 index, uint256 timestamp) public payable {
         require(index <= lenders[msg.sender].length);
         uint256 amount = computeBorrowerBalance(msg.sender, index, timestamp);
-        require(msg.value > amount);
+        require(msg.value== amount);
 
         // TODO: Properly delete array element
         for(uint i = index; i < borrowers[msg.sender].length - 1; i++)
             borrowers[msg.sender][i] = borrowers[msg.sender][i + 1];
 
         borrowers[msg.sender].pop();
-        payable(msg.sender).transfer(msg.value - amount);
     }
 
     function getContractBalance() public view returns (uint256) {

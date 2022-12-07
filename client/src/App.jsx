@@ -1,4 +1,5 @@
 import UserProvider from "./contexts/UserContext/UserProvider";
+import PoolProvider from "./contexts/PoolContext/PoolProvider";
 
 import Header from "./components/Header";
 import Home from "./components/Home.jsx";
@@ -18,17 +19,19 @@ function App() {
     <>
       <UserProvider>
         <EthProvider>
-        <Header />
-          <Router>
-            <Routes>
-              <Route exact path='/' element={<Home />}></Route>
-              <Route exact path='/home' element={<Home />}></Route>
-              <Route exact path='/p2p' element={<P2P />}></Route>
-              <Route exact path='/pool' element={<Pool />}></Route>
-              <Route exact path='/swap' element={<Swap />}></Route>
-            </Routes>
-          </Router>
-          <Footer />
+          <PoolProvider>
+            <Header />
+              <Router>
+                <Routes>
+                  <Route exact path='/' element={<Home />}></Route>
+                  <Route exact path='/home' element={<Home />}></Route>
+                  <Route exact path='/p2p' element={<P2P />}></Route>
+                    <Route exact path='/pool' element={<Pool />}></Route>
+                  <Route exact path='/swap' element={<Swap />}></Route>
+                </Routes>
+              </Router>
+            <Footer />
+          </PoolProvider>
         </EthProvider>
       </UserProvider>
     </>
