@@ -24,8 +24,7 @@ function Pool() {
     const { lendingEntries, borrowingEntries, updateEntries } = useContext(PoolContext);
     const { user } = useContext(UserContext);
     const [ethValue, setEthValue] = useState("0");
-    const [contractBalance, setContractBalance] = useState("");
-    
+    const [contractBalance, setContractBalance] = useState("");    
 
     const handleEthChange = e => {
         setEthValue(e.target.value);
@@ -34,13 +33,14 @@ function Pool() {
     useEffect(() => {
         async function update() {
             await updateEntries(contract, user.user.accountAddress);
+            await getBalance();
         }
         console.log("useEffect", contract, user);
 
-        if(contract && user && user.user && user.user.accountAddress)
+        if(web3 && contract && user && user.user && user.user.accountAddress)
             update();
     },
-    [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries)]);
+    [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries), contractBalance]);
     
     const lend = async () => {
         console.log("lend", contract, user);
@@ -55,7 +55,7 @@ function Pool() {
 
     const getBalance = async () => {
         const balance = await contract.methods.getContractBalance().call({ from: user.user.accountAddress });
-        setContractBalance(balance);
+        setContractBalance(web3.utils.fromWei(balance, 'ether'));
     };
 
     return (
@@ -69,6 +69,10 @@ function Pool() {
                             <Card.Body>
                                 <Card.Title>Lending Pool</Card.Title>
                                 <img height={90} width={90} src={p2ppng} alt=""/><br/>
+
+                                <Card.Text className="blockquote">
+                                    Pool balance: {contractBalance} ETH
+                                </Card.Text>
                                 <Form>
                                     <Form.Group className="mb-3" controlId="formAmount">
                                         <Form.Label>Amount (in ETH)</Form.Label>
