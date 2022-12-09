@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        html {
+        display: grid;
+        min-height: 100%;
+        }
+
+        body {
+        display: grid;
+        background: white;
+        font-family: "Lato", sans-serif, sans-serif;
+        text-transform: uppercase;
+        }
+
+        .container {
+        position: relative;
+        margin: auto;
+        overflow: hidden;
+        width: 650px;
+        height: 400px;
+        background: #F5F5F5;
+        box-shadow: 5px 5px 15px rgba(186, 126, 126, 0.5);
+        border-radius: 10px;
+        }
+
+        p {
+        font-size: 0.6em;
+        color: #BA7E7E;
+        letter-spacing: 1px;
+        }
+
+        h1 {
+        font-size: 1.2em;
+        color: black;
+        margin-top: -5px;
+        }
+
+        h2 {
+        color: blue;
+        margin-top: -5px;
+        }
+
+        img {
+        width: 150px;
+        margin-top: 47px;
+        }
+
+        .product {
+        position: absolute;
+        width: 60%;
+        height: 100%;
+        top: 10%;
+        left: 25%;
+        }
+
+        .desc {
+        text-transform: none;
+        letter-spacing: 0;
+        margin-bottom: 17px;
+        color: #4E4E4E;
+        font-size: 0.7em;
+        line-height: 1.6em;
+        margin-right: 5px;
+        text-align: justify;
+        }
+    </style>
+    
+  </head>
+  <body>
+    <div class="container">
+        <div>
+            <img src="{{ qrcode("data", border=10) }}">
+        </div>
+          
+        <div class="product">
+          <p>Lending Certificate</p>
+          <h4>To: {{fromAddress}}</h1>
+          <h4>Value: {{value}}</h2>
+          <p class="desc">This certificate is issued to the holder as a proof of ownership of a lending token in the pool: "{{pool}}" at time : {{timestamp}}</p>
+        </div>
+    </div>
+  </body>
+</html>

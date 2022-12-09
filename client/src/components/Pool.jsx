@@ -17,7 +17,11 @@ import Accordion from 'react-bootstrap/Accordion';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
-import p2ppng from "../images/pool.png"
+import { FaGetPocket, FaCoins, FaCertificate } from "react-icons/fa";
+
+import { hashString } from 'react-hash-string'
+
+import poolpng from "../images/pool.png"
 
 function Pool() {
     const { state: { web3, contract } } = useContext(EthContext);
@@ -37,15 +41,39 @@ function Pool() {
         }
         console.log("useEffect", contract, user);
 
-        if(web3 && contract && user && user.user && user.user.accountAddress)
+        if(web3 && contract && user && user.user && user.user.accountAddress) {
             update();
+        }
     },
-    [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries), contractBalance]);
+    [JSON.stringify(lendingEntries), JSON.stringify(borrowingEntries), contractBalance, user]);
     
     const lend = async () => {
         console.log("lend", contract, user);
-        await contract.methods.lend(Date.now()).send({ from: user.user.accountAddress, value: web3.utils.toWei(ethValue, "ether") });
+        const currentTimeStamp = Date.now();
+        let response = await contract.methods.lend(currentTimeStamp).send({ from: user.user.accountAddress, value: web3.utils.toWei(ethValue, "ether") });
         await updateEntries(contract, user.user.accountAddress);
+        console.log(response)
+
+        // create hash of the object
+        const pool = 'Default Pool';
+        const lendingHash = hashString(pool + user.user.accountAddress + ethValue + currentTimeStamp);
+        // generate lending certificate
+        // make POST call
+
+        await fetch('http://localhost:5000/api/generateCert', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                pool: 'Default Pool',
+                fromAddress: user.user.accountAddress,
+                value: ethValue,
+                timestamp: currentTimeStamp,
+                lendingHash: lendingHash
+            })
+        })
     };
 
     const borrow = async () => {
@@ -68,7 +96,7 @@ function Pool() {
                             <Card.Header>Lend and Borrow Crypto</Card.Header>
                             <Card.Body>
                                 <Card.Title>Lending Pool</Card.Title>
-                                <img height={90} width={90} src={p2ppng} alt=""/><br/>
+                                <img height={90} width={90} src={poolpng} alt=""/><br/>
 
                                 <Card.Text className="blockquote">
                                     Pool balance: {contractBalance} ETH
@@ -106,7 +134,7 @@ function Pool() {
                         <Col xs={10} md={10} lg={10}>
                             <Accordion>
                                 <Accordion.Item eventKey="0">
-                                    <Accordion.Header>Lend Transactions</Accordion.Header>
+                                    <Accordion.Header>Transactions Lent</Accordion.Header>
                                     <Accordion.Body>
                                         <Table responsive striped bordered hover>
                                             <thead>
@@ -114,6 +142,9 @@ function Pool() {
                                                     <th>#</th>
                                                     <th>Amount</th>
                                                     <th>Balance</th>
+                                                    <th>Transaction Timestamp</th>
+                                                    <th>Active</th>
+                                                    <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -132,7 +163,7 @@ function Pool() {
                         <Col xs={10} md={10} lg={10}>
                             <Accordion>
                                 <Accordion.Item eventKey="0">
-                                    <Accordion.Header>Borrow Transactions</Accordion.Header>
+                                    <Accordion.Header>Transactions Borrowed</Accordion.Header>
                                     <Accordion.Body>
                                         <Table responsive striped bordered hover>
                                             <thead>
@@ -140,6 +171,9 @@ function Pool() {
                                                     <th>#</th>
                                                     <th>Amount</th>
                                                     <th>Balance</th>
+                                                    <th>Transaction Timestamp</th>
+                                                    <th>Active</th>
+                                                    <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -151,7 +185,7 @@ function Pool() {
                             </Accordion>
                         </Col>
                     <Col/>
-        </Row>
+                </Row>
             </Container>
         </>
     );
@@ -174,30 +208,53 @@ function LendingEntry({ index, entry, web3 }) {
         await getLenderBalance(index, Date.now());
     }
     getBalance(index);
-}, []);
+}, [index]);
 
     const withdraw = async () => {
         await contract.methods.withdraw(index, Date.now()).send({ from: user.user.accountAddress });
         await updateEntries(contract, user.user.accountAddress);
     }
 
-    return (
-        <tr key = {index}>
-            <td > { index } </td>
-            <td> { web3.utils.fromWei(entry, 'ether') } ETH </td>
-            <td> { web3.utils.fromWei(lenderBalance.toString(), 'ether') }
-                                                <ButtonGroup className="me-2 float-end">
-                                                    <Button onClick={getLenderBalance} variant="primary" type="submit">
-                                                        Update Balance
-                                                    </Button>
-                                                </ButtonGroup>
+    const viewCertificate = async (lendingEntry) => {
+        const pool = 'Default Pool';
+        
+        const lendingHash = hashString(pool + user.user.accountAddress + web3.utils.fromWei(lendingEntry.amount, 'ether') + lendingEntry.timeStamp);
 
-                                                <ButtonGroup className="me-2 float-end">
-                                                    <Button onClick={withdraw} variant="primary" type="submit">
-                                                        Withdraw
-                                                    </Button>
-                                                </ButtonGroup> </td>
-        </tr>
+        window.open('http://localhost:5000/api/viewCert?id=' + lendingHash, "_blank");
+    }
+
+    return (
+        <>
+            <tr key = {index}>
+                <td > { index + 1 } </td>
+                <td> { web3.utils.fromWei(entry.amount, 'ether') } ETH </td>
+                <td>
+                    { web3.utils.fromWei(lenderBalance.toString(), 'ether') }
+                    { entry.isActive &&
+                        <span onClick={getLenderBalance} className='m-1'>
+                            <FaGetPocket title="Refresh Balance"/>
+                        </span> }
+                </td>
+                <td> { new Date(entry.timeStamp * 1000).toGMTString() } </td>
+                <td> { entry.isActive ? "Yes" : "No" } </td>
+                { entry.isActive && <td>
+                    <Button className="mx-4" onClick={withdraw} variant="success">
+                        <span className='m-1'>
+                            <FaCoins title="Withdraw"/>
+                        </span>
+                        Withdraw
+                    </Button>
+
+                    <Button onClick={() => viewCertificate(entry)} variant="secondary">
+                        <span className='m-1'>
+                            <FaCertificate title="Download Certificate"/>
+                        </span>
+                        Certificate
+                    </Button>
+                </td> }
+            </tr>
+        </>
+        
     );
 }
 
@@ -224,7 +281,7 @@ function BorrowingEntry({ index, entry, web3 }) {
             await getBorrowerBalance();
         }
         getBalance();
-    }, []);
+    }, [index]);
 
     const payback = async () => {
         const borrowerBalance = await contract.methods.getBorrowerBalance(index, Date.now()).call({ from: user.user.accountAddress });
@@ -234,22 +291,29 @@ function BorrowingEntry({ index, entry, web3 }) {
     }
 
     return (
-        <tr key = {index}>
-            <td > { index } </td>
-            <td> { web3.utils.fromWei(entry, 'ether') } ETH </td>
-            <td> { web3.utils.fromWei(borrowerBalance.toString(), 'ether') } 
-                                                <ButtonGroup className="me-2 float-end">
-                                                    <Button onClick={getBorrowerBalance} variant="primary" type="submit">
-                                                        Update Balance
-                                                    </Button>
-                                                </ButtonGroup>
-
-                                                <ButtonGroup className="me-2 float-end">
-                                                    <Button onClick={payback} variant="primary" type="submit">
-                                                        Payback
-                                                    </Button>
-                                                </ButtonGroup> </td>
-        </tr>
+        <>
+            <tr key = {index}>
+                <td > { index + 1 } </td>
+                <td> { web3.utils.fromWei(entry.amount, 'ether') } ETH </td>
+                <td>
+                    { web3.utils.fromWei(borrowerBalance.toString(), 'ether') }
+                    { entry.isActive && 
+                        <span onClick={getBorrowerBalance} className='m-1'>
+                            <FaGetPocket title="Refresh Balance"/>
+                        </span> }
+                </td>
+                <td> { new Date(entry.timeStamp * 1000).toGMTString() } </td>
+                <td> { entry.isActive ? "Yes" : "No" } </td>
+                { entry.isActive  && <td>
+                    <Button className="mx-4" onClick={payback} variant="success">
+                        <span className='m-1'>
+                            <FaCoins title="Payback"/>
+                        </span>
+                        Payback
+                    </Button>
+                </td> }
+            </tr>
+        </>
     );
 }
 
