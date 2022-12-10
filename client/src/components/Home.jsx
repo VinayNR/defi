@@ -14,7 +14,7 @@ function Home() {
   
   return (
     <>
-      <div className="p-3">
+      <div className="p-3 text-center">
         <h1>Decentralized Finance using Blockchain</h1>
         <p>
           This application lets you send cryptocurrency tokens
@@ -26,11 +26,12 @@ function Home() {
           <Card className="text-center">
             <Card.Header>P2P Transact</Card.Header>
             <Card.Body>
+              <img height={90} width={90} src={p2ppng} alt=""/><br/>
               <Card.Title>Peer to Peer Account Transact ETH</Card.Title>
               <Card.Text>
                 Use the Peer to Peer transact feature to send ETH (or other tokens you own) to your friends over the Blockchain or to your own account addresses
               </Card.Text>
-              <img height={90} width={90} src={p2ppng} alt=""/><br/>
+              
               <Button variant="primary">
                 <Nav.Link href="#/p2p">P2P Transact</Nav.Link>
               </Button>
@@ -40,9 +41,9 @@ function Home() {
 
           <Row xs={1} md={2} className="m-5">
             <Col>
-              <Card>
-                <img className="m-2" height={50} width={50} src={poolpng} alt=""/>
+              <Card className="text-center">
                 <Card.Body>
+                <img className="m-2" height={50} width={50} src={poolpng} alt=""/>
                   <Card.Title>Lending Pool</Card.Title>
                   <Card.Text>
                     Invest into a lending pool to earn interest or borrow from it.
@@ -56,9 +57,9 @@ function Home() {
               </Card>
             </Col>
             <Col>
-              <Card>
-                <img className="m-2" height={50} width={50} src={swappng} alt=""/>
+              <Card className="text-center">
                 <Card.Body>
+                <img className="m-2" height={50} width={50} src={swappng} alt=""/>
                   <Card.Title>Swap Token</Card.Title>
                   <Card.Text>
                     Swap tokens that you own into Fiat Currency and vice-versa
