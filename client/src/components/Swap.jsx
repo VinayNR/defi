@@ -14,24 +14,29 @@ import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Alert from 'react-bootstrap/Alert';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import p2ppng from "../images/p2p.png"
 import { useMemo } from 'react';
 
-const { state: { web3 } } = useContext(EthContext);
-const { user } = useContext(UserContext);
-
+//import swap from '../../truffle/contracts/Swap.json';
 
 function Swap() {
-    
+
     const [states, setStates] = useState(0);
     const [input, setInput] = useState(0);
     const [i,setI] = useState(0);
     const [inp, setInp] = useState(0);
     const [searchTerm, setSearchTerm] = useState(0);
+    const [showAlert, setShowAlert] = useState(false);
+    const [showAlert1, setShowAlert1] = useState(false);
+    const [variant, setVariant] = useState(0);
+    const [header, setHeader] = useState('');
+    const [body, setBody] = useState('');
 
-    const { state: { web3, contract } } = useContext(EthContext);
+
+    const { state: { web3, address1, contract_swap } } = useContext(EthContext);
     const { user } = useContext(UserContext);
 
     useEffect(() => {
@@ -94,6 +99,34 @@ function Swap() {
         }
     }
 
+    const send = async () => {
+
+        const elem = document.getElementById('elem1');
+
+        if(elem.value > user.user.balance)
+        {
+            console.log("transaction failed due to insufficient funds " + user.user.balance);
+            setVariant(1);
+            setHeader("transaction failed due to insufficient funds");
+            setBody("Your balance was lesser than " + elem.value + " ethers");
+            setShowAlert(true);
+
+        }
+
+        await web3.eth.sendTransaction({from: user.user.accountAddress, to: address1, value: web3.utils.toWei(elem.value, "ether")});
+        //contract_swap.contribute({"to": address1,"from": user.user.accountAddress, "value": web3.toWei(elem.value, "ether")},"password");
+
+        if(elem.value <= user.user.balance)
+        {
+            console.log("transaction successful " + user.user.balance);
+            setVariant(2);
+            setHeader("transaction successful");
+            setBody(elem.value + " ethers was debited from your wallet");
+            setShowAlert1(true);
+        }
+ 
+    }
+
     const retVal = e => {
         if(isNaN(e.target.value))
         {   
@@ -130,9 +163,23 @@ function Swap() {
 
         const elem = document.getElementById('elem1');
         if(elem.value > user.user.balance)
-            console.log("transaction not possible due to insufficient funds");
+        {
+            console.log("transaction failed due to insufficient funds " + user.user.balance);
+            setVariant(1);
+            setHeader("transaction failed due to insufficient funds");
+            setBody("Your balance was lesser than " + elem.value);
+            setShowAlert(true);
+
+        }
         else
-            console.log("transaction successful");
+        {
+            console.log("transaction successful " + user.user.balance);
+            setVariant(2);
+            setHeader("transaction successful");
+            setBody(elem.value + " ethers was debited from your wallet");
+            setShowAlert1(true);
+        }
+        
         //const URL = "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
         //const result = e.target.value.replace(/\D/g, '');
 
@@ -142,9 +189,11 @@ function Swap() {
     
     }
 
-    const send = async () => {
+
+
+    /*const send = async () => {
         await web3.eth.sendTransaction({from: user.user.accountAddress, to: toAddress, value: web3.utils.toWei(ethValue, "ether")});
-    }
+    }*/
 
 
     const zero = 0;
@@ -172,14 +221,25 @@ function Swap() {
                                     <Form.Control id="elem2" onChange={retValue} type="text" placeholder="Enter Ether amount"/>
                                     </Form.Group>
 
-                                    <Button /*onClick={send}*/ variant="primary" type="submit">
+                                    <Button onClick={send} variant="primary" type="submit">
                                             Send
                                     </Button>
-                                    
+ 
                             </Form>
                             </Card.Text>
                         </Card.Body>
                     </Card>
+                       
+                    <Alert show={showAlert} variant="danger" dismissible onClose={() => setShowAlert(false)}>
+                    <Alert.Heading>{header}</Alert.Heading>
+                    <p>{body}</p>
+                    </Alert>
+
+                    <Alert show={showAlert1} variant="success" dismissible onClose={() => setShowAlert1(false)}>
+                    <Alert.Heading>{header}</Alert.Heading>
+                    <p>{body}</p>
+                    </Alert>   
+                         
                 </Col>
                 <Col/>
                 </Row>
