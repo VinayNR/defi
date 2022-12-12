@@ -13,17 +13,23 @@ function EthProvider({ children }) {
         const web3 = new Web3(Web3.givenProvider);
         web3.currentProvider.setMaxListeners(300);
         web3.eth.net.getId().then(networkID => {
-          const { abi } = artifact;
-          let address, contract;
+          var { abi }  = artifact[0];
+          
+
+          let address, address1, contract, contract_swap;
           try {
-            address = artifact.networks[networkID].address;
+            address = artifact[0].networks[networkID].address;
+            address1 = artifact[1].networks[networkID].address;
             contract = new web3.eth.Contract(abi, address);
+            var { abi } = artifact[1];
+            contract_swap = new web3.eth.Contract(abi, address1);
+
           } catch (err) {
             console.error(err);
           }
           dispatch({
             type: actions.init,
-            data: { artifact, web3, networkID, contract }
+            data: { artifact, web3, networkID, contract, address1, contract_swap }
           });
         });
       }
@@ -32,7 +38,9 @@ function EthProvider({ children }) {
   useEffect(() => {
     const initEthProvider = async() => {
       try {
-        const artifact = require("../../contracts/Pool.json");
+        const artifact = []
+        artifact[0] = require("../../contracts/Pool.json");
+        artifact[1] = require("../../contracts/Swap.json");
         init(artifact);
       } catch (err) {
         console.error(err);
