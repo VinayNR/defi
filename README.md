@@ -11,18 +11,25 @@ On a new terminal, run ganache (Install ganache from node repository if not inst
 
 Again on a new terminal, run below
 
-cd truffle/
+```cd truffle/
 npm i
 truffle compile
 truffle migrate
+```
+
+### Backend
+On a new terminal, run the below commands
+```
+cd server
+python server.py
+```
 
 ### Frontend
 To start the React App locally, clone the repository using SSH or HTTPS
 
-cd client/
-
+```cd client/
 npm i
-
 npm start
+```
 
 Navigate to localhost:3000 to see the page
